@@ -1,8 +1,8 @@
 services:
   - type: web
-    name: crewai-research
+    name: crewai-research-system
     env: docker
-    dockerfilePath: ./Dockerfile.web
+    dockerfilePath: ./Dockerfile
     plan: free
     region: oregon
     branch: main
@@ -14,4 +14,3 @@ services:
         value: /app/src
       - key: FLASK_ENV
         value: production
-      - fromGroup: crewai-secrets
