@@ -1,0 +1,217 @@
+#!/usr/bin/env python3
+"""
+Interactive setup script for multiple API keys
+"""
+
+import os
+from pathlib import Path
+
+def setup_api_keys():
+    """Interactive setup for API keys"""
+    
+    print("🔑 Multi-LLM API Key Setup")
+    print("=" * 50)
+    print("This script will help you set up multiple API keys for rate limit bypass.")
+    print("You can skip any provider by pressing Enter without typing anything.")
+    print()
+    
+    # Read existing .env file if it exists
+    env_file = Path(".env")
+    existing_vars = {}
+    
+    if env_file.exists():
+        with open(env_file, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if '=' in line and not line.startswith('#'):
+                    key, value = line.split('=', 1)
+                    existing_vars[key] = value
+    
+    # Collect API keys
+    api_keys = {}
+    
+    # SERP API (required)
+    print("📡 SERP API Key (Required for web search):")
+    serp_key = existing_vars.get('SERP_API_KEY', 'c6020957730d61b03c7cb4c64234470af47eae1df79c673f659bae685d76e936')
+    new_serp = input(f"SERP API Key [{serp_key[:20]}...]: ").strip()
+    api_keys['SERP_API_KEY'] = new_serp if new_serp else serp_key
+    print()
+    
+    # Groq API Keys
+    print("🚀 Groq API Keys (Free tier, good for testing):")
+    groq_keys = []
+    for i in range(1, 6):
+        key_name = f"GROQ_API_KEY_{i}" if i > 1 else "GROQ_API_KEY"
+        existing = existing_vars.get(key_name, '')
+        prompt = f"Groq Key #{i} [{existing[:20]}...]: " if existing else f"Groq Key #{i}: "
+        key = input(prompt).strip()
+        if key:
+            groq_keys.append((key_name, key))
+        elif existing:
+            groq_keys.append((key_name, existing))
+    
+    for key_name, key_value in groq_keys:
+        api_keys[key_name] = key_value
+    print(f"✅ Added {len(groq_keys)} Groq keys")
+    print()
+    
+    # OpenAI API Keys
+    print("🤖 OpenAI API Keys (Higher rate limits, excellent quality):")
+    openai_keys = []
+    for i in range(1, 4):
+        key_name = f"OPENAI_API_KEY_{i}" if i > 1 else "OPENAI_API_KEY"
+        existing = existing_vars.get(key_name, '')
+        prompt = f"OpenAI Key #{i} [{existing[:20]}...]: " if existing else f"OpenAI Key #{i}: "
+        key = input(prompt).strip()
+        if key:
+            openai_keys.append((key_name, key))
+        elif existing:
+            openai_keys.append((key_name, existing))
+    
+    for key_name, key_value in openai_keys:
+        api_keys[key_name] = key_value
+    print(f"✅ Added {len(openai_keys)} OpenAI keys")
+    print()
+    
+    # Gemini API Keys
+    print("💎 Google Gemini API Keys (Good performance, reasonable limits):")
+    gemini_keys = []
+    for i in range(1, 4):
+        key_name = f"GEMINI_API_KEY_{i}" if i > 1 else "GEMINI_API_KEY"
+        existing = existing_vars.get(key_name, '')
+        prompt = f"Gemini Key #{i} [{existing[:20]}...]: " if existing else f"Gemini Key #{i}: "
+        key = input(prompt).strip()
+        if key:
+            gemini_keys.append((key_name, key))
+        elif existing:
+            gemini_keys.append((key_name, existing))
+    
+    for key_name, key_value in gemini_keys:
+        api_keys[key_name] = key_value
+    print(f"✅ Added {len(gemini_keys)} Gemini keys")
+    print()
+    
+    # Anthropic API Keys
+    print("🧠 Anthropic Claude API Keys (Excellent quality):")
+    anthropic_keys = []
+    for i in range(1, 3):
+        key_name = f"ANTHROPIC_API_KEY_{i}" if i > 1 else "ANTHROPIC_API_KEY"
+        existing = existing_vars.get(key_name, '')
+        prompt = f"Anthropic Key #{i} [{existing[:20]}...]: " if existing else f"Anthropic Key #{i}: "
+        key = input(prompt).strip()
+        if key:
+            anthropic_keys.append((key_name, key))
+        elif existing:
+            anthropic_keys.append((key_name, existing))
+    
+    for key_name, key_value in anthropic_keys:
+        api_keys[key_name] = key_value
+    print(f"✅ Added {len(anthropic_keys)} Anthropic keys")
+    print()
+    
+    # Kimi API Keys
+    print("🌙 Kimi/Moonshot API Keys:")
+    kimi_keys = []
+    for i in range(1, 3):
+        key_name = f"KIMI_API_KEY_{i}" if i > 1 else "KIMI_API_KEY"
+        existing = existing_vars.get(key_name, '')
+        prompt = f"Kimi Key #{i} [{existing[:20]}...]: " if existing else f"Kimi Key #{i}: "
+        key = input(prompt).strip()
+        if key:
+            kimi_keys.append((key_name, key))
+        elif existing:
+            kimi_keys.append((key_name, existing))
+    
+    for key_name, key_value in kimi_keys:
+        api_keys[key_name] = key_value
+    print(f"✅ Added {len(kimi_keys)} Kimi keys")
+    print()
+    
+    # Add default model
+    api_keys['MODEL'] = existing_vars.get('MODEL', 'groq/llama-3.1-8b-instant')
+    
+    # Write to .env file
+    print("💾 Writing configuration to .env file...")
+    
+    with open('.env', 'w') as f:
+        f.write("# Multi-LLM Configuration for Rate Limit Bypass\n")
+        f.write("# Generated by setup_api_keys.py\n\n")
+        
+        # SERP API
+        f.write("# ===== SEARCH API =====\n")
+        f.write(f"SERP_API_KEY={api_keys['SERP_API_KEY']}\n\n")
+        
+        # Groq keys
+        if any(k.startswith('GROQ_API_KEY') for k in api_keys):
+            f.write("# ===== GROQ API KEYS =====\n")
+            for key_name, key_value in api_keys.items():
+                if key_name.startswith('GROQ_API_KEY'):
+                    f.write(f"{key_name}={key_value}\n")
+            f.write("\n")
+        
+        # OpenAI keys
+        if any(k.startswith('OPENAI_API_KEY') for k in api_keys):
+            f.write("# ===== OPENAI API KEYS =====\n")
+            for key_name, key_value in api_keys.items():
+                if key_name.startswith('OPENAI_API_KEY'):
+                    f.write(f"{key_name}={key_value}\n")
+            f.write("\n")
+        
+        # Gemini keys
+        if any(k.startswith('GEMINI_API_KEY') for k in api_keys):
+            f.write("# ===== GEMINI API KEYS =====\n")
+            for key_name, key_value in api_keys.items():
+                if key_name.startswith('GEMINI_API_KEY'):
+                    f.write(f"{key_name}={key_value}\n")
+            f.write("\n")
+        
+        # Anthropic keys
+        if any(k.startswith('ANTHROPIC_API_KEY') for k in api_keys):
+            f.write("# ===== ANTHROPIC API KEYS =====\n")
+            for key_name, key_value in api_keys.items():
+                if key_name.startswith('ANTHROPIC_API_KEY'):
+                    f.write(f"{key_name}={key_value}\n")
+            f.write("\n")
+        
+        # Kimi keys
+        if any(k.startswith('KIMI_API_KEY') for k in api_keys):
+            f.write("# ===== KIMI API KEYS =====\n")
+            for key_name, key_value in api_keys.items():
+                if key_name.startswith('KIMI_API_KEY'):
+                    f.write(f"{key_name}={key_value}\n")
+            f.write("\n")
+        
+        # Default model
+        f.write("# ===== DEFAULT MODEL =====\n")
+        f.write(f"MODEL={api_keys['MODEL']}\n")
+    
+    print("✅ Configuration saved to .env file!")
+    print()
+    
+    # Summary
+    total_llm_keys = sum(1 for k in api_keys.keys() if k.endswith('_API_KEY') and k != 'SERP_API_KEY')
+    print("📊 Summary:")
+    print(f"   🔍 SERP API: {'✅' if api_keys.get('SERP_API_KEY') else '❌'}")
+    print(f"   🚀 Groq keys: {len([k for k in api_keys if k.startswith('GROQ_API_KEY')])}")
+    print(f"   🤖 OpenAI keys: {len([k for k in api_keys if k.startswith('OPENAI_API_KEY')])}")
+    print(f"   💎 Gemini keys: {len([k for k in api_keys if k.startswith('GEMINI_API_KEY')])}")
+    print(f"   🧠 Anthropic keys: {len([k for k in api_keys if k.startswith('ANTHROPIC_API_KEY')])}")
+    print(f"   🌙 Kimi keys: {len([k for k in api_keys if k.startswith('KIMI_API_KEY')])}")
+    print(f"   📊 Total LLM keys: {total_llm_keys}")
+    print()
+    
+    if total_llm_keys > 1:
+        print("🎉 Great! With multiple API keys, your system will:")
+        print("   • Automatically bypass rate limits")
+        print("   • Use the best available LLM for each request")
+        print("   • Provide much faster and more reliable research")
+        print("   • Fallback to other providers if one fails")
+    else:
+        print("⚠️  Consider adding more API keys for better performance!")
+    
+    print()
+    print("🚀 Ready to start your enhanced CrewAI system!")
+    print("   Run: python run_local.py")
+
+if __name__ == "__main__":
+    setup_api_keys()

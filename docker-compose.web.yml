@@ -1,0 +1,21 @@
+services:
+  crewai-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: firstcrew-web
+    environment:
+      - PYTHONPATH=/app/src
+      - FLASK_ENV=production
+    volumes:
+      # Mount for persistent reports
+      - ./reports:/app/reports
+      - ./output:/app/output
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

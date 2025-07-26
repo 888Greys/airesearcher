@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: crewai-research
+    env: docker
+    dockerfilePath: ./Dockerfile.web
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: PYTHONPATH
+        value: /app/src
+      - key: FLASK_ENV
+        value: production
+      - fromGroup: crewai-secrets

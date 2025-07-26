@@ -1,0 +1,13 @@
+# Core CrewAI and LLM dependencies
+crewai>=0.150.0
+requests>=2.31.0
+flask>=2.3.0
+python-dotenv>=1.0.0
+
+# Bot dependencies
+python-telegram-bot>=20.0
+slack-bolt>=1.18.0
+
+# Additional utilities
+asyncio
+logging

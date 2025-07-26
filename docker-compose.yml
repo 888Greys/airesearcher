@@ -1,0 +1,67 @@
+services:
+  crewai-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: firstcrew
+    environment:
+      - PYTHONPATH=/app/src
+    volumes:
+      # Mount source code for development (optional)
+      - ./src:/app/src
+      - ./knowledge:/app/knowledge
+      # Mount output directory to persist reports
+      - ./output:/app/output
+    working_dir: /app
+    # Override default command for different operations
+    command: python -c "from firstcrew.main import run; run()"
+    
+    # Uncomment below for interactive mode
+    # stdin_open: true
+    # tty: true
+    
+    # Network configuration (if needed)
+    # ports:
+    #   - "8000:8000"
+    
+    # Resource limits (optional)
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+
+  # Optional: Add a service for training
+  crewai-train:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: firstcrew-train
+    environment:
+      - PYTHONPATH=/app/src
+    volumes:
+      - ./src:/app/src
+      - ./knowledge:/app/knowledge
+      - ./output:/app/output
+    working_dir: /app
+    command: python -c "from firstcrew.main import train; train()"
+    profiles:
+      - training
+
+  # Optional: Add a service for testing
+  crewai-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: firstcrew-test
+    environment:
+      - PYTHONPATH=/app/src
+    volumes:
+      - ./src:/app/src
+      - ./knowledge:/app/knowledge
+      - ./output:/app/output
+    working_dir: /app
+    command: python -c "from firstcrew.main import test; test()"
+    profiles:
+      - testing
